@@ -6,12 +6,14 @@ A simple and efficient command-line tool to convert HTML and TXT files to PDF us
 
 - 📄 Convert HTML files to PDF with full CSS support
 - 📝 Convert plain text files to PDF with readable formatting
+- 📁 **Recursive directory conversion** - batch convert all HTML files in a directory
 - 🎨 Clean, styled output with proper margins and typography
 - 📱 A4 format with professional 20mm margins
-- 🚀 Fast conversion using headless Chrome
+- 🚀 Fast conversion using headless Chrome with browser reuse for batch operations
 - 🛡️ Robust error handling and validation
-- 📊 Detailed logging with timestamps
+- 📊 Detailed logging with timestamps and conversion statistics
 - ⏭️ Skips conversion if output PDF already exists
+- 🔧 Configurable output filename patterns
 
 ## Installation
 
@@ -29,31 +31,67 @@ npm install html2pdf
 
 ### Command Line Interface
 
+html2pdf provides two main commands:
+
+#### Single File Conversion
 ```bash
-html2pdf -i <input-file> -o <output-file>
+html2pdf convert -i <input-file> -o <output-file>
 ```
 
-#### Options
+#### Recursive Directory Conversion
+```bash
+html2pdf recurse -d <directory> [--skip-html-extension]
+```
+
+### Commands and Options
+
+#### `convert` - Single File Conversion
 - `-i, --input <path>` - Input file path (.html or .txt) **[required]**
 - `-o, --output <path>` - Output PDF file path **[required]**
+
+#### `recurse` - Recursive Directory Conversion
+- `-d, --dir <path>` - Directory to scan recursively for HTML files **[required]**
+- `-h, --skip-html-extension` - Skip .html in output filename (default: false)
+
+#### Global Options
 - `-V, --version` - Display version number
-- `-h, --help` - Display help information
+- `--help` - Display help information
 
 ### Examples
 
-#### Convert HTML to PDF
+#### Single File Conversion
 ```bash
-html2pdf -i document.html -o document.pdf
+# Convert HTML to PDF
+html2pdf convert -i document.html -o document.pdf
+
+# Convert Text to PDF
+html2pdf convert -i notes.txt -o notes.pdf
+
+# Using relative and absolute paths
+html2pdf convert -i ./src/index.html -o /Users/john/Downloads/output.pdf
 ```
 
-#### Convert Text to PDF
+#### Recursive Directory Conversion
 ```bash
-html2pdf -i notes.txt -o notes.pdf
+# Convert all HTML files in a directory (creates body.html.pdf)
+html2pdf recurse -d ./website
+
+# Convert with clean filenames (creates body.pdf instead of body.html.pdf)
+html2pdf recurse -d ./website --skip-html-extension
+
+# Convert files in a specific path
+html2pdf recurse -d /path/to/html/files
 ```
 
-#### Using relative and absolute paths
+#### Filename Pattern Examples
 ```bash
-html2pdf -i ./src/index.html -o /Users/john/Downloads/output.pdf
+# Default behavior (preserves .html in filename)
+./website/index.html     → ./website/index.html.pdf
+./website/about.html     → ./website/about.html.pdf
+
+# With --skip-html-extension flag
+./website/index.html     → ./website/index.pdf  
+./website/about.html     → ./website/about.pdf
 ```
 
 ## Supported File Types
@@ -79,8 +117,21 @@ const { convertToPdf } = require('html2pdf');
 
 async function example() {
   try {
+    // Single file conversion
     await convertToPdf('input.html', 'output.pdf');
     console.log('Conversion successful!');
+    
+    // Batch conversion with shared browser instance
+    const puppeteer = require('puppeteer');
+    const browser = await puppeteer.launch({ headless: 'new' });
+    
+    try {
+      await convertToPdf('file1.html', 'file1.pdf', browser);
+      await convertToPdf('file2.html', 'file2.pdf', browser);
+      await convertToPdf('file3.html', 'file3.pdf', browser);
+    } finally {
+      await browser.close();
+    }
   } catch (error) {
     console.error('Conversion failed:', error.message);
   }
@@ -122,8 +173,11 @@ cd html2pdf
 # Install dependencies
 npm install
 
-# Run locally
-node index.js -i example.html -o example.pdf
+# Run locally with convert command
+node index.js convert -i example.html -o example.pdf
+
+# Run locally with recurse command
+node index.js recurse -d testdata
 ```
 
 ### Testing with Task Runner
@@ -143,17 +197,27 @@ task test-conversion
 
 ### Manual Testing
 ```bash
-# Test with HTML file
+# Test single file conversion
 echo '<h1>Hello World</h1>' > test.html
-node index.js -i test.html -o test.pdf
+node index.js convert -i test.html -o test.pdf
 
-# Test with text file
+# Test text file conversion
 echo 'Hello World' > test.txt
-node index.js -i test.txt -o test.pdf
+node index.js convert -i test.txt -o test.pdf
+
+# Test recursive conversion
+mkdir -p test-dir
+echo '<h1>Page 1</h1>' > test-dir/page1.html
+echo '<h1>Page 2</h1>' > test-dir/page2.html
+node index.js recurse -d test-dir
 
 # Test skip behavior (run same command twice)
-node index.js -i test.html -o test.pdf  # Creates PDF
-node index.js -i test.html -o test.pdf  # Skips with warning
+node index.js convert -i test.html -o test.pdf  # Creates PDF
+node index.js convert -i test.html -o test.pdf  # Skips with warning
+
+# Test filename patterns
+node index.js recurse -d test-dir                    # Creates .html.pdf files
+node index.js recurse -d test-dir --skip-html-extension  # Creates .pdf files
 ```
 
 ## License
