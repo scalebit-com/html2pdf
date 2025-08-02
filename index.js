@@ -41,6 +41,11 @@ async function convertToPdf(inputPath, outputPath) {
       throw new Error(`Input file does not exist: ${inputPath}`);
     }
 
+    if (fs.existsSync(outputPath)) {
+      logger.warn(`Output file already exists, skipping conversion: ${outputPath}`);
+      return;
+    }
+
     const ext = path.extname(inputPath).toLowerCase();
     if (!['.html', '.txt'].includes(ext)) {
       throw new Error(`Unsupported file format: ${ext}. Only .html and .txt files are supported.`);
@@ -127,7 +132,7 @@ async function main() {
   const program = new Command();
   
   program
-    .name('topdf')
+    .name('html2pdf')
     .description('Convert HTML and TXT files to PDF using Puppeteer')
     .version('1.0.0')
     .requiredOption('-i, --input <path>', 'input file path (.html or .txt)')

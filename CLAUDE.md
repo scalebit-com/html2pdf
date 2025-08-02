@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Node.js CLI tool called `topdf` that converts HTML and TXT files to PDF using Puppeteer. The project is published as an npm package with a binary entry point.
+This is a Node.js CLI tool called `html2pdf` that converts HTML and TXT files to PDF using Puppeteer. The project is published as an npm package with a binary entry point.
 
 ## Commands
 
@@ -17,16 +17,30 @@ npm install
 npm start -- -i input.html -o output.pdf
 
 # Run as installed binary
-topdf -i input.html -o output.pdf
+html2pdf -i input.html -o output.pdf
+```
+
+### Development Commands
+```bash
+# Convert test HTML file to PDF
+task render-testdata
+
+# Clean generated PDF files
+task clean-testdata
+
+# Test conversion and verify output
+task test-conversion
 ```
 
 ### Usage Commands
 ```bash
 # Convert HTML to PDF
-topdf -i example.html -o example.pdf
+html2pdf -i example.html -o example.pdf
 
 # Convert TXT to PDF
-topdf -i document.txt -o document.pdf
+html2pdf -i document.txt -o document.pdf
+
+# Note: Skips conversion if output PDF already exists
 ```
 
 ## Architecture
@@ -48,6 +62,8 @@ topdf -i document.txt -o document.pdf
 - Network idle waiting for HTML rendering
 - Graceful error handling and cleanup
 - Modular exports for programmatic use
+- Skips conversion if target PDF already exists (with warning log)
+- Task runner integration for development workflow
 
 ### Dependencies
 
@@ -59,3 +75,6 @@ topdf -i document.txt -o document.pdf
 
 - `index.js`: Main entry point containing all functionality
 - `package.json`: Package configuration with binary setup
+- `Taskfile.yml`: Task runner configuration for development commands
+- `testdata/`: Directory containing test files (PDFs are gitignored)
+- `testdata/testfile.html`: Complex HTML test file with tables, styling, and layouts

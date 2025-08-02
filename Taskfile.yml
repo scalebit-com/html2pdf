@@ -1,0 +1,31 @@
+version: '3'
+
+tasks:
+  render-testdata:
+    desc: Convert testfile.html to PDF in testdata directory
+    cmds:
+      - node index.js -i testdata/testfile.html -o testdata/testfile.pdf
+    sources:
+      - testdata/testfile.html
+      - index.js
+    generates:
+      - testdata/testfile.pdf
+    silent: false
+
+  clean-testdata:
+    desc: Remove generated PDF files from testdata directory
+    cmds:
+      - rm -f testdata/*.pdf
+
+  test-conversion:
+    desc: Run render-testdata and verify PDF was created
+    deps: [render-testdata]
+    cmds:
+      - |
+        if [ -f testdata/testfile.pdf ]; then
+          echo "✅ PDF conversion successful: testdata/testfile.pdf"
+          ls -la testdata/testfile.pdf
+        else
+          echo "❌ PDF conversion failed"
+          exit 1
+        fi

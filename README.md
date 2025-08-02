@@ -1,4 +1,4 @@
-# topdf
+# html2pdf
 
 A simple and efficient command-line tool to convert HTML and TXT files to PDF using Puppeteer.
 
@@ -11,17 +11,18 @@ A simple and efficient command-line tool to convert HTML and TXT files to PDF us
 - 🚀 Fast conversion using headless Chrome
 - 🛡️ Robust error handling and validation
 - 📊 Detailed logging with timestamps
+- ⏭️ Skips conversion if output PDF already exists
 
 ## Installation
 
 ### Global Installation (Recommended)
 ```bash
-npm install -g topdf
+npm install -g html2pdf
 ```
 
 ### Local Installation
 ```bash
-npm install topdf
+npm install html2pdf
 ```
 
 ## Usage
@@ -29,7 +30,7 @@ npm install topdf
 ### Command Line Interface
 
 ```bash
-topdf -i <input-file> -o <output-file>
+html2pdf -i <input-file> -o <output-file>
 ```
 
 #### Options
@@ -42,17 +43,17 @@ topdf -i <input-file> -o <output-file>
 
 #### Convert HTML to PDF
 ```bash
-topdf -i document.html -o document.pdf
+html2pdf -i document.html -o document.pdf
 ```
 
 #### Convert Text to PDF
 ```bash
-topdf -i notes.txt -o notes.pdf
+html2pdf -i notes.txt -o notes.pdf
 ```
 
 #### Using relative and absolute paths
 ```bash
-topdf -i ./src/index.html -o /Users/john/Downloads/output.pdf
+html2pdf -i ./src/index.html -o /Users/john/Downloads/output.pdf
 ```
 
 ## Supported File Types
@@ -71,10 +72,10 @@ topdf -i ./src/index.html -o /Users/john/Downloads/output.pdf
 
 ## Programmatic Usage
 
-You can also use topdf programmatically in your Node.js applications:
+You can also use html2pdf programmatically in your Node.js applications:
 
 ```javascript
-const { convertToPdf } = require('topdf');
+const { convertToPdf } = require('html2pdf');
 
 async function example() {
   try {
@@ -125,7 +126,22 @@ npm install
 node index.js -i example.html -o example.pdf
 ```
 
-### Testing
+### Testing with Task Runner
+
+This project includes a Taskfile for common development tasks:
+
+```bash
+# Convert test HTML file to PDF
+task render-testdata
+
+# Clean generated PDF files
+task clean-testdata
+
+# Test conversion and verify output
+task test-conversion
+```
+
+### Manual Testing
 ```bash
 # Test with HTML file
 echo '<h1>Hello World</h1>' > test.html
@@ -134,6 +150,10 @@ node index.js -i test.html -o test.pdf
 # Test with text file
 echo 'Hello World' > test.txt
 node index.js -i test.txt -o test.pdf
+
+# Test skip behavior (run same command twice)
+node index.js -i test.html -o test.pdf  # Creates PDF
+node index.js -i test.html -o test.pdf  # Skips with warning
 ```
 
 ## License
@@ -159,6 +179,10 @@ MIT
 **Permission denied on output**
 - Check write permissions for the output directory
 - Use absolute paths to avoid confusion
+
+**Output file already exists**
+- The tool automatically skips conversion if the target PDF file already exists
+- Use `rm output.pdf` to force regeneration, or choose a different output filename
 
 **Large file conversion is slow**
 - This is normal for complex HTML with many images or external resources

@@ -1,10 +1,10 @@
 {
-  "name": "topdf",
+  "name": "html2pdf",
   "version": "1.0.0",
   "description": "Convert HTML and TXT files to PDF using Puppeteer",
   "main": "index.js",
   "bin": {
-    "topdf": "./index.js"
+    "html2pdf": "./index.js"
   },
   "scripts": {
     "start": "node index.js"
