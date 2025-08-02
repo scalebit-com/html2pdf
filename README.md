@@ -17,19 +17,69 @@ A simple and efficient command-line tool to convert HTML and TXT files to PDF us
 
 ## Installation
 
-### Global Installation (Recommended)
+### Option 1: Docker (Recommended)
+The easiest way to use html2pdf without installing Node.js or dependencies:
+
+```bash
+# Pull the latest image
+docker pull perarneng/html2pdf:latest
+
+# Convert a single file
+docker run --rm -v "$(pwd):/app/data" perarneng/html2pdf:latest convert -i input.html -o output.pdf
+
+# Recursive conversion
+docker run --rm -v "$(pwd):/app/data" perarneng/html2pdf:latest recurse -d .
+```
+
+### Option 2: Global Installation
 ```bash
 npm install -g html2pdf
 ```
 
-### Local Installation
+### Option 3: Local Installation
 ```bash
 npm install html2pdf
 ```
 
 ## Usage
 
-### Command Line Interface
+### Docker Usage
+
+#### Basic Docker Commands
+```bash
+# Show help
+docker run --rm perarneng/html2pdf:latest --help
+
+# Convert command help
+docker run --rm perarneng/html2pdf:latest convert --help
+
+# Recurse command help
+docker run --rm perarneng/html2pdf:latest recurse --help
+```
+
+#### Docker File Conversion Examples
+```bash
+# Convert HTML to PDF (mount current directory)
+docker run --rm -v "$(pwd):/app/data" perarneng/html2pdf:latest convert -i document.html -o document.pdf
+
+# Convert text to PDF
+docker run --rm -v "$(pwd):/app/data" perarneng/html2pdf:latest convert -i notes.txt -o notes.pdf
+
+# Recursive conversion with default naming
+docker run --rm -v "$(pwd):/app/data" perarneng/html2pdf:latest recurse -d .
+
+# Recursive conversion with clean filenames
+docker run --rm -v "$(pwd):/app/data" perarneng/html2pdf:latest recurse -d . --skip-html-extension
+
+# Mount specific directory
+docker run --rm -v "/path/to/your/files:/app/data" perarneng/html2pdf:latest convert -i input.html -o output.pdf
+```
+
+#### Docker Image Tags
+- `perarneng/html2pdf:latest` - Latest stable version
+- `perarneng/html2pdf:1.0.0` - Specific version
+
+### Command Line Interface (Local Installation)
 
 html2pdf provides two main commands:
 
@@ -140,6 +190,10 @@ async function example() {
 
 ## Requirements
 
+### Docker Installation
+- Docker Desktop or Docker Engine
+
+### Local Installation
 - Node.js 14 or higher
 - Chrome/Chromium (automatically installed with Puppeteer)
 
@@ -178,6 +232,28 @@ node index.js convert -i example.html -o example.pdf
 
 # Run locally with recurse command
 node index.js recurse -d testdata
+```
+
+### Docker Development
+
+This project includes Docker tasks in the Taskfile for building and testing:
+
+```bash
+# Build Docker image
+task docker-build
+
+# Push Docker image to registry
+task docker-push
+
+# Test Docker image functionality
+task docker-test-help           # Test CLI help commands
+task docker-test-convert        # Test single file conversion
+task docker-test-recurse        # Test recursive conversion
+task docker-test-recurse-clean  # Test clean filename conversion
+task docker-test-all            # Run comprehensive test suite
+
+# Clean up Docker test files
+task docker-clean-test
 ```
 
 ### Testing with Task Runner
@@ -236,7 +312,16 @@ MIT
 
 ### Common Issues
 
-**Browser launch failed**
+**Docker: Permission denied**
+- Ensure Docker Desktop is running
+- Check that the mounted directory has proper permissions
+- Use `docker run --rm -v "$(pwd):/app/data"` for current directory
+
+**Docker: Cannot mount directory**
+- Use absolute paths for volume mounting
+- Example: `-v "/full/path/to/files:/app/data"`
+
+**Browser launch failed (Local Installation)**
 - Ensure you have sufficient disk space
 - On Linux, you may need to install additional dependencies for Chrome
 

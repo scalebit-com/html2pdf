@@ -29,3 +29,112 @@ tasks:
           echo "❌ PDF conversion failed"
           exit 1
         fi
+
+  docker-build:
+    desc: Build Docker image with version tag from package.json and latest
+    vars:
+      VERSION:
+        sh: node -p "require('./package.json').version"
+    cmds:
+      - echo "Building Docker image for version {{.VERSION}}"
+      - docker build -t perarneng/html2pdf:{{.VERSION}} .
+      - docker tag perarneng/html2pdf:{{.VERSION}} perarneng/html2pdf:latest
+      - echo "✅ Built images:"
+      - echo "  - perarneng/html2pdf:{{.VERSION}}"
+      - echo "  - perarneng/html2pdf:latest"
+
+  docker-push:
+    desc: Push Docker images to registry (both version and latest tags)
+    vars:
+      VERSION:
+        sh: node -p "require('./package.json').version"
+    deps: [docker-build]
+    cmds:
+      - echo "Pushing Docker images for version {{.VERSION}}"
+      - docker push perarneng/html2pdf:{{.VERSION}}
+      - docker push perarneng/html2pdf:latest
+      - echo "✅ Successfully pushed:"
+      - echo "  - perarneng/html2pdf:{{.VERSION}}"
+      - echo "  - perarneng/html2pdf:latest"
+
+  docker-clean-test:
+    desc: Clean up Docker test output files
+    cmds:
+      - rm -f testdata/*-docker-test.pdf
+      - rm -f testdata/testfile.html.pdf
+      - echo "✅ Cleaned Docker test output files"
+
+  docker-test-help:
+    desc: Test Docker image CLI help commands
+    deps: [docker-build]
+    cmds:
+      - echo "🧪 Testing Docker CLI help commands..."
+      - echo "📋 Main help:"
+      - docker run --rm perarneng/html2pdf:latest --help
+      - echo ""
+      - echo "📋 Convert command help:"
+      - docker run --rm perarneng/html2pdf:latest convert --help
+      - echo ""
+      - echo "📋 Recurse command help:"
+      - docker run --rm perarneng/html2pdf:latest recurse --help
+      - echo "✅ All help commands working"
+
+  docker-test-convert:
+    desc: Test Docker image single file conversion
+    deps: [docker-build, docker-clean-test]
+    cmds:
+      - echo "🧪 Testing Docker single file conversion..."
+      - docker run --rm -v "{{.PWD}}/testdata:/app/data" perarneng/html2pdf:latest convert -i testfile.html -o testfile-docker-test.pdf
+      - |
+        if [ -f testdata/testfile-docker-test.pdf ]; then
+          echo "✅ Docker convert test successful: testfile-docker-test.pdf"
+          ls -la testdata/testfile-docker-test.pdf
+        else
+          echo "❌ Docker convert test failed"
+          exit 1
+        fi
+
+  docker-test-recurse:
+    desc: Test Docker image recursive directory conversion
+    deps: [docker-build, docker-clean-test]
+    cmds:
+      - echo "🧪 Testing Docker recursive conversion..."
+      - docker run --rm -v "{{.PWD}}/testdata:/app/data" perarneng/html2pdf:latest recurse -d .
+      - |
+        if [ -f testdata/testfile.html.pdf ]; then
+          echo "✅ Docker recurse test successful: testfile.html.pdf"
+          ls -la testdata/testfile.html.pdf
+        else
+          echo "❌ Docker recurse test failed"
+          exit 1
+        fi
+
+  docker-test-recurse-clean:
+    desc: Test Docker image recursive conversion with clean filenames
+    deps: [docker-build, docker-clean-test]
+    cmds:
+      - echo "🧪 Testing Docker recursive conversion with clean filenames..."
+      - docker run --rm -v "{{.PWD}}/testdata:/app/data" perarneng/html2pdf:latest recurse -d . --skip-html-extension
+      - |
+        if [ -f testdata/testfile.pdf ]; then
+          echo "✅ Docker recurse clean test successful: testfile.pdf"
+          ls -la testdata/testfile.pdf
+        else
+          echo "❌ Docker recurse clean test failed"
+          exit 1
+        fi
+
+  docker-test-all:
+    desc: Run comprehensive Docker test suite
+    deps: [docker-test-help, docker-test-convert, docker-test-recurse, docker-test-recurse-clean]
+    cmds:
+      - echo ""
+      - echo "🎉 All Docker tests completed successfully!"
+      - echo "📊 Test Summary:"
+      - echo "  ✅ CLI help commands working"
+      - echo "  ✅ Single file conversion working"
+      - echo "  ✅ Recursive conversion working"
+      - echo "  ✅ Clean filename conversion working"
+      - echo ""
+      - echo "📁 Generated test files:"
+      - ls -la testdata/*.pdf | grep -E "(docker-test|testfile\.html\.pdf|testfile\.pdf)$" || echo "  No test files found"

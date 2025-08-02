@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Node.js CLI tool called `html2pdf` that converts HTML and TXT files to PDF using Puppeteer. The project supports both single file conversion and recursive directory processing with optimized browser instance reuse for batch operations.
+This is a Node.js CLI tool called `html2pdf` that converts HTML and TXT files to PDF using Puppeteer. The project supports both single file conversion and recursive directory processing with optimized browser instance reuse for batch operations. **The project is fully containerized with Docker and available on Docker Hub as `perarneng/html2pdf`.**
 
 ## Commands
 
@@ -36,6 +36,56 @@ task clean-testdata
 
 # Test conversion and verify output
 task test-conversion
+```
+
+### Docker Commands
+
+#### Docker Build and Deployment
+```bash
+# Build Docker image (creates perarneng/html2pdf:1.0.0 and perarneng/html2pdf:latest)
+task docker-build
+
+# Push Docker images to Docker Hub
+task docker-push
+```
+
+#### Docker Testing
+```bash
+# Test Docker image CLI help commands
+task docker-test-help
+
+# Test single file conversion
+task docker-test-convert
+
+# Test recursive conversion
+task docker-test-recurse
+
+# Test recursive conversion with clean filenames
+task docker-test-recurse-clean
+
+# Run comprehensive Docker test suite
+task docker-test-all
+
+# Clean up Docker test output files
+task docker-clean-test
+```
+
+#### Docker Usage Examples
+```bash
+# Pull from Docker Hub
+docker pull perarneng/html2pdf:latest
+
+# Convert single file
+docker run --rm -v "$(pwd):/app/data" perarneng/html2pdf:latest convert -i input.html -o output.pdf
+
+# Recursive conversion
+docker run --rm -v "$(pwd):/app/data" perarneng/html2pdf:latest recurse -d .
+
+# Recursive with clean filenames
+docker run --rm -v "$(pwd):/app/data" perarneng/html2pdf:latest recurse -d . --skip-html-extension
+
+# Show help
+docker run --rm perarneng/html2pdf:latest --help
 ```
 
 ### Usage Commands
@@ -109,12 +159,27 @@ html2pdf recurse --help
 - **Graceful error handling and cleanup**
 - **Modular exports for programmatic use**
 - **Task runner integration for development workflow**
+- **🐳 Docker Support**: Fully containerized with multi-architecture support (AMD64/ARM64)
+- **📦 Docker Hub**: Available as `perarneng/html2pdf` with version tags
+- **🧪 Comprehensive Testing**: Docker test suite with automated validation
 
 ### Dependencies
 
 - `puppeteer`: Headless Chrome for PDF generation
 - `commander`: CLI argument parsing
 - `chalk`: Terminal output coloring
+
+### Docker Architecture
+
+- **Base Image**: `node:24.4.1-bullseye` for stability and security
+- **Browser**: System Chromium installed via apt (multi-architecture support)
+- **Security**: Non-root user (`html2pdf`) with minimal permissions
+- **Volume Mount**: `/app/data` for input/output file access
+- **Environment**: 
+  - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true`
+  - `PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium`
+- **Size**: Optimized layers with efficient caching
+- **Tags**: Version-specific (`1.0.0`) and `latest` tags available
 
 ## File Structure
 
@@ -126,7 +191,8 @@ html2pdf recurse --help
   - `recurseCommand()`: Batch conversion handler
   - `main()`: CLI setup with subcommands
 - `package.json`: Package configuration with binary setup
-- `Taskfile.yml`: Task runner configuration for development commands
+- `Dockerfile`: Multi-stage Docker build with system Chromium and security best practices
+- `Taskfile.yml`: Task runner configuration for development and Docker commands
 - `testdata/`: Directory containing test files (PDFs are gitignored)
 - `testdata/testfile.html`: Complex HTML test file with tables, styling, and layouts
 
