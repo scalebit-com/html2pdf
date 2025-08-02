@@ -1,0 +1,20 @@
+{
+  "name": "topdf",
+  "version": "1.0.0",
+  "description": "Convert HTML and TXT files to PDF using Puppeteer",
+  "main": "index.js",
+  "bin": {
+    "topdf": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "puppeteer": "^23.0.0",
+    "commander": "^11.0.0",
+    "chalk": "^4.1.2"
+  },
+  "keywords": ["pdf", "html", "txt", "convert", "puppeteer"],
+  "author": "",
+  "license": "MIT"
+}
