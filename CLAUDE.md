@@ -42,7 +42,7 @@ task test-conversion
 
 #### Docker Build and Deployment
 ```bash
-# Build Docker image (creates perarneng/html2pdf:1.0.0 and perarneng/html2pdf:latest)
+# Build Docker image (creates perarneng/html2pdf:1.1.0 and perarneng/html2pdf:latest)
 task docker-build
 
 # Push Docker images to Docker Hub
@@ -154,7 +154,8 @@ html2pdf recurse --help
 - **Smart Skipping**: Detects existing PDFs and skips conversion with warnings
 - **Supports both `.html` and `.txt` file inputs**
 - **Automatic output directory creation**
-- **A4 format with 20mm margins**
+- **A4 format with optimized margins (5mm horizontal, 20mm vertical)**
+- **Page scale set to 0.7 (70%) for better content density**
 - **Network idle waiting for HTML rendering**
 - **Graceful error handling and cleanup**
 - **Modular exports for programmatic use**
@@ -179,7 +180,7 @@ html2pdf recurse --help
   - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true`
   - `PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium`
 - **Size**: Optimized layers with efficient caching
-- **Tags**: Version-specific (`1.0.0`) and `latest` tags available
+- **Tags**: Version-specific (`1.1.0`) and `latest` tags available
 
 ## File Structure
 

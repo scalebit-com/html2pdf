@@ -8,7 +8,7 @@ A simple and efficient command-line tool to convert HTML and TXT files to PDF us
 - 📝 Convert plain text files to PDF with readable formatting
 - 📁 **Recursive directory conversion** - batch convert all HTML files in a directory
 - 🎨 Clean, styled output with proper margins and typography
-- 📱 A4 format with professional 20mm margins
+- 📱 A4 format with optimized margins (5mm horizontal, 20mm vertical)
 - 🚀 Fast conversion using headless Chrome with browser reuse for batch operations
 - 🛡️ Robust error handling and validation
 - 📊 Detailed logging with timestamps and conversion statistics
@@ -77,7 +77,7 @@ docker run --rm -v "/path/to/your/files:/app/data" perarneng/html2pdf:latest con
 
 #### Docker Image Tags
 - `perarneng/html2pdf:latest` - Latest stable version
-- `perarneng/html2pdf:1.0.0` - Specific version
+- `perarneng/html2pdf:1.1.0` - Specific version
 
 ### Command Line Interface (Local Installation)
 
@@ -154,7 +154,8 @@ html2pdf recurse -d /path/to/html/files
 ## Output Format
 
 - **Format**: PDF (A4 size)
-- **Margins**: 20mm on all sides
+- **Margins**: 5mm horizontal, 20mm vertical (optimized for content density)
+- **Scale**: 0.7 (70% of original size for better content fit)
 - **Font**: System fonts (San Francisco on macOS, Segoe UI on Windows, Roboto on Linux)
 - **Text**: Optimized for readability with proper line spacing
 
