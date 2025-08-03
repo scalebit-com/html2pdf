@@ -112,11 +112,12 @@ async function convertToPdf(inputPath, outputPath, browser = null) {
         path: outputPath,
         format: 'A4',
         printBackground: true,
+        scale: 0.7,
         margin: {
           top: '20mm',
-          right: '20mm',
+          right: '5mm',
           bottom: '20mm',
-          left: '20mm'
+          left: '5mm'
         }
       });
 
