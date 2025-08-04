@@ -61,7 +61,8 @@ async function convertToPdf(inputPath, outputPath, browser = null) {
     if (!browser) {
       logger.info('Launching browser...');
       localBrowser = await puppeteer.launch({
-        headless: 'new'
+        headless: 'new',
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
       });
       browser = localBrowser;
     }
@@ -206,7 +207,8 @@ async function recurseCommand(options) {
     try {
       logger.info('Launching browser for batch conversion...');
       browser = await puppeteer.launch({
-        headless: 'new'
+        headless: 'new',
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
       });
 
       for (const htmlFile of htmlFiles) {
@@ -243,7 +245,7 @@ async function main() {
   program
     .name('html2pdf')
     .description('Convert HTML and TXT files to PDF using Puppeteer')
-    .version('1.0.0');
+    .version('1.2.0');
 
   program
     .command('convert')

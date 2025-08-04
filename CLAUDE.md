@@ -175,12 +175,13 @@ html2pdf recurse --help
 - **Base Image**: `node:24.4.1-bullseye` for stability and security
 - **Browser**: System Chromium installed via apt (multi-architecture support)
 - **Security**: Non-root user (`html2pdf`) with minimal permissions
+- **Sandbox**: Chrome sandbox disabled with `--no-sandbox` and `--disable-setuid-sandbox` flags for Docker compatibility
 - **Volume Mount**: `/app/data` for input/output file access
 - **Environment**: 
   - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true`
   - `PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium`
 - **Size**: Optimized layers with efficient caching
-- **Tags**: Version-specific (`1.1.0`) and `latest` tags available
+- **Tags**: Version-specific and `latest` tags available
 
 ## File Structure
 

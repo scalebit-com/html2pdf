@@ -326,6 +326,10 @@ MIT
 - Ensure you have sufficient disk space
 - On Linux, you may need to install additional dependencies for Chrome
 
+**Docker: Browser namespace/sandbox errors**
+- The Docker image includes Chrome sandbox workarounds for containerized environments
+- This is automatically handled in the Docker image with `--no-sandbox` and `--disable-setuid-sandbox` flags
+
 **Permission denied on output**
 - Check write permissions for the output directory
 - Use absolute paths to avoid confusion
